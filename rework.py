@@ -11,7 +11,7 @@ bot = commands.Bot(command_prefix='!')
 async def on_ready():
     print("Ready")
     setattr(bot,"db",await aiosqlite.connect("level.db"))
-    #await asyncio.sleep(1)
+    await asyncio.sleep(1)
     async with bot.db.cursor() as cursor:
         await cursor.execute('''CREATE TABLE IF NOT EXISTS levels (level INTEGER, xp INTEGER, user INTEGER, guild INTEGER)''')
 
@@ -33,30 +33,31 @@ async def on_message(message):
     author = message.author
     guild = message.guild
     async with bot.db.cursor() as cursor:
-        await cursor.execute("SELECT xp, level FROM levels WHERE user =? AND guild =?",(str(author.id),str(guild.id),))
+        await cursor.execute("SELECT xp, level FROM levels WHERE user = ? AND guild = ?", (str(author.id), str(guild.id)))
         result = await cursor.fetchone()
+
         if not result:
             await cursor.execute("INSERT INTO levels (level, xp, user, guild) VALUES (?, ?, ?, ?)", (0, 0, str(author.id), str(guild.id)))
             xp = 0
             level = 0
         else:
-            xp = result[0]
-            level = result[1]
-        if level <4:
-            xp += random.randint(1, 4) * 4
+            level, xp = result
 
+        if level < 5:
+            xp += random.randint(1,3)
         else:
-            xp += random.randint(1, 3) * 2
+            rand = random.randint(1, (level//4))
+            if rand == 1:
+                xp += random.randint(1,3)
 
-        
-        if xp >= 100:
+        if xp >= 10:
             level += 1
             xp = 0
             await message.channel.send(f"{author.mention} 님이 **{level}** 이 되었습니다!!")
 
-        await cursor.execute("UPDATE levels SET xp = ?, level = ? WHERE user = ? AND guild = ?",(xp, level, str(author.id), str(guild.id)))
-    await bot.db.commit()
+        await cursor.execute("UPDATE levels SET level = ?, xp = ? WHERE user = ? AND guild = ?", (level, xp, str(author.id), str(guild.id)))
 
+    await bot.db.commit()
 
 
 @bot.slash_command(aliases=['lvl','rank','r'])
@@ -77,52 +78,8 @@ async def level(ctx,member: discord.Member = None):
         except TypeError:
             xp = 0
             level = 1
+        await ctx.respond(f"{member.name}'s level is{level}\nXP:{xp}")
 
-        if level == 1:
-            embed = discord.Embed(title=f"{member.name}",description=f"your level is *level {level}*",color=0xAEAEAE)
-            embed.set_footer(text=f"tear : Rich\ncurrent EXP : {xp}")
-            embed.set_thumbnail(url="attachment://image.png")
-            with open("image/rich.png", "rb") as f:
-                await ctx.respond(embed=embed, file=discord.File(f, "image.png"))
-
-        if level == 2:
-            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0x900000)
-            embed.set_footer(text=f"tear : Jebus\ncurrent EXP : {xp}")
-            embed.set_thumbnail(url="attachment://image.jpg")
-            with open("image/jebus.jpg", "rb") as f:
-                await ctx.respond(embed=embed, file=discord.File(f, "image.jpg"))
-
-        if level == 3:
-            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xff0000)
-            embed.set_footer(text=f"tear : Coolhank\ncurrent EXP : {xp}")
-            embed.set_thumbnail(url="attachment://image.png")
-            with open("image/coolhank.png", "rb") as f:
-                await ctx.respond(embed=embed, file=discord.File(f, "image.png"))
-        
-        if level == 4:
-            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0x474747)
-            embed.set_footer(text=f"tear : Deimos\ncurrent EXP : {xp}")
-            embed.set_thumbnail(url="attachment://image.png")
-            with open("image/deimos.png", "rb") as f:
-                await ctx.respond(embed=embed, file=discord.File(f, "image.png"))
-        if level == 5:
-            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xFF66FF)
-            embed.set_footer(text=f"tear : Wank\ncurrent EXP : {xp}")
-            embed.set_thumbnail(url="attachment://image.png")
-            with open("image/wank.png", "rb") as f:
-                await ctx.respond(embed=embed, file=discord.File(f, "image.png"))
-        #await ctx.respond(f"{member.name}'s level is{level}\nXP:{xp}")
-
-'''
-@bot.command(aliases=['lb','lvlboard'])
-async def leaderboard(ctx):
-    async with bot.db.cursor() as cursor:
-        await cursor.execute("SELECT xp FROM levels WHERE user = ? AND guild = ?",(ctx.guild.id))
-        levelsys = await cursor.fetchone()
-        if levelsys:
-            if not levelsys[0] == 1:
-                await ctx.reply("Level system disabled!!")
-'''
 
 @bot.slash_command()
 async def my_info(ctx,member:discord.Member = None):
