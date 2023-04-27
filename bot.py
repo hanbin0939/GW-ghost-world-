@@ -58,10 +58,10 @@ async def on_message(message):
             xp += random.randint(1,3) * 2
         
         if level == 7:
-            xp += random.randint(1,3)
+            xp += random.randint(1,4)
 
         else:
-            xp += random.randint(1,2)
+            xp += random.randint(1,3)
 
         
         if xp >= 100:
@@ -91,13 +91,13 @@ async def level(ctx,member: discord.Member = None):
             level = level[0]
         except TypeError:
             xp = 0
-            level = 1
+            level = 0
 
         if level == 1:
             embed = discord.Embed(title=f"{member.name}",description=f"your level is *level {level}*",color=0xAEAEAE)
-            embed.set_footer(text=f"tear : Rich\ncurrent EXP : {xp}")
+            embed.set_footer(text=f"tear : Grunt\ncurrent EXP : {xp}")
             embed.set_thumbnail(url="attachment://image.png")
-            with open("image/rich.png", "rb") as f:
+            with open("image/Grunt.png", "rb") as f:
                 await ctx.respond(embed=embed, file=discord.File(f, "image.png"))
 
         if level == 2:
@@ -138,6 +138,43 @@ async def level(ctx,member: discord.Member = None):
             embed.set_footer(text=f"tier : torture\nEXP : {xp}")
             with open("image/torture.png", "rb") as f:
                 await ctx.respond(embed=embed, file=discord.File(f, "image.png"))
+
+        if level == 8:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xEC0A0A)
+            embed.set_thumbnail(url="attachment://image.jpg")
+            embed.set_footer(text=f"tier : hank\nEXP : {xp}")
+            with open("image/hank.jpg", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.jpg'))
+        if level == 9:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0x007025)
+            embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : tricky\nEXP : {xp}")
+            with open("image/tricky.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
+        if level == 10:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0x100000)
+            embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : auditor\nEXP : {xp}")
+            with open("image/Auditor.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
+        if level == 11:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xFF0000)
+            embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : Demon\nEXP : {xp}")
+            with open("image/DemonFNMIcon.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
+        if level == 12:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xFF0000)
+            embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : hell clown\nEXP : {xp}")
+            with open("image/hell.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
+        if level == 13:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xD70000)
+            embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : MAG HANK\nEXP : {xp}")
+            with open("image/mag_hank.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
         #await ctx.respond(f"{member.name}'s level is{level}\nXP:{xp}")
 
 '''
