@@ -5,7 +5,8 @@ import asyncio
 from config.data import token
 import datetime
 import aiosqlite
-bot = commands.Bot(command_prefix='!')
+from easy_pil import*
+bot = commands.Bot(command_prefix='&')
 
 @bot.event
 async def on_ready():
@@ -42,23 +43,27 @@ async def on_message(message):
         else:
             xp = result[0]
             level = result[1]
-        if level < 2:
-            xp += random.randint(1, 5) * 10
-
-        if level == 3:
-            xp += random.randint(1,3) * 10
-        
-        if level == 4:
-            xp += random.randint(1,3) * 5
-        
-        if level == 5:
-            xp += random.randint(1,3) * 3
+        if level <= 5:
+            xp += random.randint(1,4) * 7
 
         if level == 6:
-            xp += random.randint(1,3) * 2
-        
+            xp += random.randint(1,4) * 5
+
         if level == 7:
-            xp += random.randint(1,4)
+            xp += random.randint(1,4) * 4
+        
+        if level == 8:
+            xp += random.randint(1,4) * 4
+
+        if level == 9:
+            xp += random.randint(1,4) * 4
+        if level == 10:
+            xp += random.randint(1,4) * 4
+
+        if level == 11 :
+            xp += random.randint(1,4) * 3
+        if level == 12:
+            xp += random.randint(1,4) * 3
 
         else:
             xp += random.randint(1,3)
@@ -166,19 +171,85 @@ async def level(ctx,member: discord.Member = None):
         if level == 12:
             embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xFF0000)
             embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : evil dual\nEXP : {xp}")
+            with open("image/evildual.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
+        if level == 13:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xFF0000)
+            embed.set_thumbnail(url="attachment://image.png")
             embed.set_footer(text=f"tier : hell clown\nEXP : {xp}")
             with open("image/hell.png", "rb") as f:
                 await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
-        if level == 13:
+        if level == 14:
+            embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0x555454)
+            embed.set_thumbnail(url="attachment://image.png")
+            embed.set_footer(text=f"tier : Dual\nEXP : {xp}")
+            with open("image/dual.png", "rb") as f:
+                await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
+        if level == 15:
             embed = discord.Embed(title=f"{member.name}",description=f"your level is *Level {level}*",color=0xD70000)
             embed.set_thumbnail(url="attachment://image.png")
             embed.set_footer(text=f"tier : MAG HANK\nEXP : {xp}")
             with open("image/mag_hank.png", "rb") as f:
                 await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
-        #await ctx.respond(f"{member.name}'s level is{level}\nXP:{xp}")
+        else:
+            await ctx.respond(f"{member.name}'s level is{level}\nXP:{xp}")
 
-'''
-@bot.command(aliases=['lb','lvlboard'])
+@bot.slash_command(aliases=['lvl','rank','r'])
+async def level_image(ctx,member: discord.Member = None):
+    if member is None:
+        member = ctx.author
+    async with bot.db.cursor() as cursor:
+        await cursor.execute("SELECT xp FROM levels WHERE user = ? AND guild = ?",(member.id,ctx.guild.id))
+        xp = await cursor.fetchone()
+        await cursor.execute("SELECT level FROM levels WHERE user = ? AND guild = ?",(member.id,ctx.guild.id))
+        level = await cursor.fetchone()
+
+        if not xp or not level:
+            await cursor.execute("INSERT INTO levels (level, xp, user, guild) VALUES (?, ?, ?, ?)", (0, 0, member.id, ctx.guild.id))
+        try:
+            xp = xp[0]
+            level = level[0]
+        except TypeError:
+            xp = 0
+            level = 0
+        user_data = {
+            "name" : f"{member.name}#{member.discriminator}",
+            "xp" : xp,
+            "level" : level,
+            "next_level_xp" : 100,
+            "percentage": xp,
+
+        }
+
+        background = Editor(Canvas((900,300),color="#141414"))
+        profile_picture = await load_image_async(str(member.avatar.url))
+        profile = Editor(profile_picture).resize((150,150)).circle_image()
+
+        poppins = Font.poppins(size=40)
+        poppins_small = Font.poppins(size=20)
+
+        card_right_shape = [(600,0), (750, 300), (900, 300), (900,0)]
+
+        background.polygon(card_right_shape,color="#FFFFFF")
+        background.paste(profile, (30,30))
+
+        background.rectangle((30,220),width=650,height=40,color="#FFFFFF",radius=20)
+        background.bar((30,220),max_width=650, height=40, percentage=user_data["percentage"],color="#282828",radius=20,)
+        background.text((200,40), user_data["name"], font= poppins, color="#FFFFFF")
+
+        background.rectangle((200,100),width=350,height=2, fill="#FFFFFF")
+        background.text(
+            (200,130),
+            f"levle - {user_data['level']} | XP - {user_data['xp']}/{user_data['next_level_xp']}",
+            font=poppins_small,
+            color="#FFFFFF"
+        )
+
+        file = discord.File(fp=background.image_bytes,filename="levelcard.png")
+        await ctx.respond(file=file)
+
+@bot.slash_command(aliases=['lb','lvlboard'])
 async def leaderboard(ctx):
     async with bot.db.cursor() as cursor:
         await cursor.execute("SELECT xp FROM levels WHERE user = ? AND guild = ?",(ctx.guild.id))
@@ -186,7 +257,18 @@ async def leaderboard(ctx):
         if levelsys:
             if not levelsys[0] == 1:
                 await ctx.reply("Level system disabled!!")
-'''
+        await cursor.execute("SELECT level, xp, user FROM levels WHERE guild = ?",(ctx.guild.id))
+        data = await cursor.fetchall()
+        if data:
+            em = discord.Embed(title="Level Leaderboard")
+            count = 0
+            for table in data:
+                count += 1
+                user = ctx.guild.get_member(table[2])
+                em.add_field(name=f"{count}. {user.name}",value=f"Level-**{table[0]}** | XP-**{table[1]}**",inline=False)
+            return await ctx.send(embed=em)
+        return await ctx.respond("there has not users stored in leaderboard")
+
 
 @bot.slash_command()
 async def my_info(ctx,member:discord.Member = None):
