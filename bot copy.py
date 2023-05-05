@@ -5,6 +5,7 @@ import asyncio
 from config.data import token
 import datetime
 import aiosqlite
+import aiohttp
 from easy_pil import*
 bot = commands.Bot(command_prefix='&')
 
@@ -43,12 +44,30 @@ async def on_message(message):
         else:
             xp = result[0]
             level = result[1]
-        if level < 5:
+        if level <= 5:
+            xp += random.randint(1,4) * 7
+
+        if level == 6:
+            xp += random.randint(1,4) * 5
+
+        if level == 7:
             xp += random.randint(1,4) * 4
+        
+        if level == 8:
+            xp += random.randint(1,4) * 4
+
+        if level == 9:
+            xp += random.randint(1,4) * 4
+        if level == 10:
+            xp += random.randint(1,4) * 4
+
+        if level == 11 :
+            xp += random.randint(1,4) * 3
+        if level == 12:
+            xp += random.randint(1,4) * 3
+
         else:
-            rand = random.randint(1,(level//4))
-            if rand == 1:
-                xp += random.randint(1,4) * 2
+            xp += random.randint(1,3)
 
         
         if xp >= 100:
@@ -176,7 +195,12 @@ async def level(ctx,member: discord.Member = None):
                 await ctx.respond(embed=embed, file=discord.File(f, 'image.png'))
         else:
             await ctx.respond(f"{member.name}'s level is{level}\nXP:{xp}")
-
+async def load_image_async(url: str):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            img = await response.read()
+            return img
+        
 @bot.slash_command(aliases=['lvl','rank','r'])
 async def level_image(ctx,member: discord.Member = None):
     if member is None:
@@ -230,6 +254,27 @@ async def level_image(ctx,member: discord.Member = None):
 
         file = discord.File(fp=background.image_bytes,filename="levelcard.png")
         await ctx.respond(file=file)
+
+@bot.slash_command(aliases=['lb','lvlboard'])
+async def leaderboard(ctx):
+    async with bot.db.cursor() as cursor:
+        await cursor.execute("SELECT xp FROM levels WHERE user = ? AND guild = ?",(ctx.guild.id))
+        levelsys = await cursor.fetchone()
+        if levelsys:
+            if not levelsys[0] == 1:
+                await ctx.reply("Level system disabled!!")
+        await cursor.execute("SELECT level, xp, user FROM levels WHERE guild = ?",(ctx.guild.id))
+        data = await cursor.fetchall()
+        if data:
+            em = discord.Embed(title="Level Leaderboard")
+            count = 0
+            for table in data:
+                count += 1
+                user = ctx.guild.get_member(table[2])
+                em.add_field(name=f"{count}. {user.name}",value=f"Level-**{table[0]}** | XP-**{table[1]}**",inline=False)
+            return await ctx.send(embed=em)
+        return await ctx.respond("there has not users stored in leaderboard")
+
 
 @bot.slash_command()
 async def my_info(ctx,member:discord.Member = None):
