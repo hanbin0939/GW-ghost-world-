@@ -2,8 +2,14 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 from youtube_dl import YoutubeDL
+import youtube_dl
 
-bot = commands.Bot(command_prefix='!')
+class VoiceError(Exception):
+    pass
+
+
+class YTDLError(Exception):
+    pass
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -20,12 +26,17 @@ class Music(commands.Cog):
             vc = await ctx.author.voice.channel.connect()
 
         with YoutubeDL(YDL_OPTIONS) as ydl:
-            info = ydl.extract_info(url, download=False)
-        URL = info['formats'][0]['url']
-
-        vc.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=URL))
-        vc.source = discord.PCMVolumeTransformer(vc.source)
-        vc.source.volume = 0.5
+            try:
+                info = ydl.extract_info(url, download=False)
+                URL = info['formats'][0]['url']
+                # Rest of your code that requires 'info' goes here
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                # Handle the exception here or notify user about the issue, do not proceed further with 'info' variable
+            else:
+                vc.play(discord.FFmpegPCMAudio(executable="ffmpeg", source=URL))
+                vc.source = discord.PCMVolumeTransformer(vc.source)
+                vc.source.volume = 0.5
 
     @commands.command()
     async def leave(self, ctx):

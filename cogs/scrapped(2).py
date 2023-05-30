@@ -62,6 +62,5 @@ class Music(commands.Cog):
         await ctx.send(f'Added {str(tracks[0])} to the queue.')
         await player.play(tracks[0])
 
-
-bot = Bot()
-bot.run('TOKEN')
+def setup(bot):
+    bot.add_cog(Music(bot))
