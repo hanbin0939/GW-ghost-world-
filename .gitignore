@@ -152,6 +152,12 @@ cython_debug/
 #.idea/
 config/
 level.db
+ffmpeg/
+.idea/
+image/
 bot2.py
 bot2.py
 bot2.py
+cogs/scrapped(2).py
+cogs/scrapped(5).py
+*.json
