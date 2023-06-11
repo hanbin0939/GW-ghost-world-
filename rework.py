@@ -19,6 +19,6 @@ for cog in cogs_list:
 @bot.event
 async def on_ready():
     print("Bot Ready!")
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="주위 : 이봇은 태스트 버전이므로 불안정할수 있습니다!"))
+    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="Emaegency alart (DDOS)"))
     
-bot.run(token_beta)
+bot.run(token)
