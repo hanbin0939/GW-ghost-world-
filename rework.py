@@ -9,8 +9,10 @@ load_dotenv()
 
 bot = commands.Bot(command_prefix='%',intents=discord.Intents.all(),owner_ids=[759072684461391893])
 cogs_path = 'cogs'
-cogs_list = ["music",
-             "mp3"
+cogs_list = [
+             "user",
+             "modal",
+             "report"
              ]
 
 for cog in cogs_list:
@@ -19,6 +21,6 @@ for cog in cogs_list:
 @bot.event
 async def on_ready():
     print("Bot Ready!")
-    await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="Emaegency alart (DDOS)"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Testing..."))
     
-bot.run(token)
+bot.run(token_beta)

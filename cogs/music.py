@@ -8,7 +8,7 @@ async def connect_nodes(self):
         await wavelink.NodePool.create_node(
         bot=self.bot,
         host='fsn.lavalink.alexanderof.xyz',
-        port=2333,
+        port=2333, 
         password = "lavalink",
         )
 
