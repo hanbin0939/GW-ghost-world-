@@ -1,2 +1,0 @@
-hanbin0939 is report f"{nickname}_bug_report.txt" 's error'.
-description -> f"{nickname}_bug_report.txt"
