@@ -1,9 +1,11 @@
 import discord
 from discord.ext import commands
 from discord.commands import Option
-from discord.utils import get
 import datetime
+global_blacklist_user = [800186598779256852 , 692642438304759819]
 
+blacklisted_users = [692642438304759819]
+specific_server_id = 1069174895893827604
 class user(commands.Cog):
 
     new_member_role_name = "DEV Role"
@@ -39,7 +41,7 @@ class user(commands.Cog):
             await nickname.ban()
             await ctx.respond(f"{nickname} 님이 차단되었습니다.")
         else:
-            await ctx.respond("warning! No Acess allowed")
+            await ctx.respond("warning! No Access allowed")
 
     @commands.command()
     async def profile(self,ctx):
@@ -70,6 +72,27 @@ class user(commands.Cog):
         embed.set_footer(icon_url = f"{ctx.author.avatar.url}", text = f"Requested by {ctx.author}")
         embed.timestamp = datetime.datetime.utcnow()
         await ctx.respond(embed=embed)
+    @discord.slash_command()
+    @commands.is_owner()
+    async def send_user(self, ctx, user:discord.Member, send_message:Option(str,"message")):
+        member = ctx.author
+        await user.send(f"{send_message} send bt {member}")
 
-def setup(bot): # this is called by Pycord to setup the cog
+    @commands.Cog.listener()
+    async def on_message(self,message):
+        if message.guild is not None and message.guild.id == specific_server_id:
+            if message.author.id in blacklisted_users:
+                await message.delete()
+            else:
+                await self.bot.process_commands(message)
+        else:
+            await self.bot.process_commands(message)
+
+        if message.author.id in global_blacklist_user:
+            await message.delete()
+        else:
+            await self.bot.process_commands(message)
+
+
+def setup(bot):
     bot.add_cog(user(bot))

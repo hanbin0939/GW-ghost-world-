@@ -1,0 +1,2 @@
+SL뉴비(닉네임원조) is reporting 테스트 's error'.
+description -> 이 메세지는 베타테스팅을 위해 보냈습니다. :)

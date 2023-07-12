@@ -35,7 +35,7 @@ class Report(commands.Cog):
     @discord.slash_command()
     async def bug_report(self, ctx: discord.ApplicationContext):
         """Shows an example of a modal dialog being invoked from a slash command."""
-        modal = MyModal(title="Modal via Slash Command")
+        modal = MyModal(title="Bug Report [GW]")
         await ctx.send_modal(modal)
 
 def setup(bot):
