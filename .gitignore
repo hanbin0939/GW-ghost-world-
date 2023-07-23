@@ -163,3 +163,4 @@ cogs/scrapped(2).py
 cogs/scrapped(5).py
 .db
 *.json
+*.db

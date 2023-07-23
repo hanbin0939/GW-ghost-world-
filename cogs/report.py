@@ -2,7 +2,7 @@ import os
 import discord
 from discord.ext import commands
 
-folder_path = "my_folder"
+folder_path = "bug_report"
 
 class MyModal(discord.ui.Modal):
     def __init__(self, *args, **kwargs) -> None:

@@ -20,6 +20,6 @@ for cog in cogs_list:
 @bot.event
 async def on_ready():
     print("Bot Ready!")
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Rework Process 35%"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Rework Process 45%"))
     
 bot.run(token_beta)
